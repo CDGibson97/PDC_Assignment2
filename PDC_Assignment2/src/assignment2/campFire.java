@@ -2,8 +2,7 @@ package assignment2;
 
 /**
  *
- * @author Callum Gibson 
- * StudentID 15906010
+ * @author Callum Gibson StudentID 15906010
  */
 public class campFire {
 
@@ -13,76 +12,54 @@ public class campFire {
     Player player;
     saveFile file;
 
-    campFire(Player character, saveFile file) {
+    public campFire(Player character) {
         this.player = character;
-        this.file = file;
+
     }
 
-    public boolean campFire() throws InterruptedException {
-        userScanner input = new userScanner();
-        player.magicCharges = player.mcTotal;
-        
-        Thread.sleep(1000);
-        System.out.println("You find a place to rest...");
+    //Creates final boss instance
+    public void battleBoss() {
+        Battle battle = new Battle(player, true);
+    }
 
-        System.out.println("");
+    //Returns true, and will continue into battle screen
+    public boolean continueJourney() {
+        return true;
+    }
 
-        boolean run = true;
-        while (run) {
-            System.out.println("Current points: " + player.points);
-            System.out.println("1. Carry On"); //Continue the loop, and battle random enemies to get stronger
-            System.out.println("2. Level Up [Cost: " + this.player.levelCost + "]");
-            System.out.println("3. Purchase more healing potions [50 points to refill]");
-            System.out.println("4. Go to Castle [This will start the final boss]");
-            System.out.println("5. Save Game");
-            System.out.println("X. Quit Program");
-            System.out.println("");
-
-            String userInput = input.getInput();
-            
-                //Exit the application
-            if (userInput.equalsIgnoreCase("X")) {
-                System.exit(0);
-
-            } else if (Integer.parseInt(userInput) == 1) {
-                run = false;
-                
-                //Starts the level up process of the character.
-            } else if (Integer.parseInt(userInput) == 2) {
-                player.levelUp();
-                
-                //Refills all health potions 
-            } else if (Integer.parseInt(userInput) == 3) {
-                player.refill();
-               
-                //Begins the final boss, if you win, game ends, if lose, bounce back to the campfire.
-            } else if (Integer.parseInt(userInput) == 4) {
-                System.out.println("You go towards the castle, where the Dragon resides");
-                Battle battle = new Battle(player, true);
-                battle.Screen();
-                if (battle.enemy.currentHealth <= 0) {
-                    System.out.println("You bested the Dragon, and now the castle is yours!");
-                    System.out.println("");
-                    Thread.sleep(1000);
-                    System.out.println("Game created by Callum Gibson");
-                    System.exit(0);
-                }
-                //Saves character details 
-            } else if (Integer.parseInt(userInput) == 5) {
-                System.out.print("Saving");
-                Thread.sleep(500);
-                System.out.print(".");
-                Thread.sleep(500);
-                System.out.print(".");
-                Thread.sleep(500);
-                System.out.print(".");
-                file.saveGame(player);
-                Thread.sleep(500);
-                System.out.println("\nSaving Complete!\n");
-                Thread.sleep(1000);
-            } 
-            
+//Refills health potions at campfire, if player has enough points 
+    public void refill() {
+        if (player.points >= player.potionCost) {
+            System.out.println("Potions have been refilled!");
+            player.flasks = player.flasksCap;
+        } else {
+            System.out.println("You do not have enough points to refill your potions!");
         }
-        return true; //Return true will continue the game, return false will close out of the program (once implemented)
+    }
+
+
+    //Base function to allow leveling up at campfires, increasing all stats by fixed integers
+    public void levelUp() {
+        if (player.points >= player.levelCost) {
+            player.maxHealth += 10;
+            player.currentHealth = player.maxHealth;
+            player.attack += 2;
+            player.magicAttack += 3;
+            player.level++;
+            System.out.println("You are now Level " + player.level);
+            player.points = player.points - player.levelCost;
+            player.levelCost += 10;
+            if (player.level % 5 == 0) {
+                player.flasksCap++;
+                System.out.println("Potion Capacity Increased!");
+            }
+            if (player.level % 10 == 0) {
+                player.mcTotal++;
+                System.out.println("Magic Casts Increased!");
+                player.magicCharges = player.mcTotal;
+            }
+        } else {
+            System.out.println("You do not have points to level up");
+        }
     }
 }

@@ -2,7 +2,8 @@ package assignment2;
 
 /**
  *
- * @author Callum Gibson StudentID 15906010
+ * @author Callum Gibson 
+ * StudentID: 15906010
  */
 import java.util.Random;
 
@@ -89,42 +90,8 @@ public class Player {
         return rand.nextInt(this.attack);
     }
 
-//Base function to allow leveling up at campfires, increasing all stats by fixed integers
-    public void levelUp() {
-        if (this.points >= this.levelCost) {
-            this.maxHealth += 10;
-            this.currentHealth = this.maxHealth;
-            this.attack += 2;
-            this.magicAttack += 3;
-            this.level++;
-            System.out.println("You are now Level " + this.level);
-            this.points = this.points - this.levelCost;
-            this.levelCost += 10;
-            if (this.level % 5 == 0) {
-                this.flasksCap++;
-                System.out.println("Potion Capacity Increased!");
-            }
-            if (this.level % 10 == 0) {
-                this.mcTotal++;
-                System.out.println("Magic Casts Increased!");
-                this.magicCharges = this.mcTotal;
-            }
-        } else {
-            System.out.println("You do not have points to level up");
-        }
-    }
 
-//Copy of the player, used only in the final boss, which can be activated by menu in campfire.
-    public Player clonePlayer() {
-        Player clone = new Player("The First Lord");
-        clone.level = this.level + 10;
-        clone.maxHealth += clone.level * 10;
-        clone.currentHealth = clone.maxHealth;
-        clone.attack += clone.level * 5;
-        clone.points = 100;
 
-        return clone;
-    }
 
 //Returns a true or false to dictate whether player can run away from monster or not
     public boolean flee() {
@@ -151,13 +118,4 @@ public class Player {
 
     }
 
-//Refills health potions at campfire, if player has enough points 
-    public void refill() {
-        if (this.points >= this.potionCost) {
-            System.out.println("Potions have been refilled!");
-            this.flasks = this.flasksCap;
-        } else {
-            System.out.println("You do not have enough points to refill your potions!");
-        }
-    }
 }
