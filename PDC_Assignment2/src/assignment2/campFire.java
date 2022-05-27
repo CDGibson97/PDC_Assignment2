@@ -73,8 +73,7 @@ public class campFire {
         output += "\nMagic Attack: " + player.magicAttack;
         output += "     Magic Casts: " +player.mcTotal;
         
-        gui.textArea.setText(output);
-        
+        gui.textArea.setText(output);        
        
     }
 }
