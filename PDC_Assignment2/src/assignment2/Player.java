@@ -84,14 +84,14 @@ public class Player {
         this.points = points;
         this.levelCost = this.level * 10;
     }
-
+    
+    
+    //Everything below move to battle
+    
     public int attack() { //returns an attack value
         Random rand = new Random();
         return rand.nextInt(this.attack);
     }
-
-
-
 
 //Returns a true or false to dictate whether player can run away from monster or not
     public boolean flee() {
@@ -115,7 +115,5 @@ public class Player {
         } else {
             System.out.println("You have no Potions!");
         }
-
     }
-
 }

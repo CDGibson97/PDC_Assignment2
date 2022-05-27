@@ -11,12 +11,13 @@ public class campFire {
     //Spend points on level ups and health potion refills
     Player player;
     saveFile file;
+    GameGUI gui;
 
-    public campFire(Player character) {
+    public campFire(Player character, GameGUI gui) {
         this.player = character;
+        this.gui = gui;
 
     }
-
     //Creates final boss instance
     public void battleBoss() {
         Battle battle = new Battle(player, true);
@@ -26,40 +27,54 @@ public class campFire {
     public boolean continueJourney() {
         return true;
     }
-
 //Refills health potions at campfire, if player has enough points 
     public void refill() {
         if (player.points >= player.potionCost) {
-            System.out.println("Potions have been refilled!");
+            gui.textArea.setText("Potions have been refilled!");
             player.flasks = player.flasksCap;
         } else {
-            System.out.println("You do not have enough points to refill your potions!");
+            gui.textArea.setText("You do not have enough points to refill your potions!");
         }
     }
-
-
     //Base function to allow leveling up at campfires, increasing all stats by fixed integers
-    public void levelUp() {
+    public void levelUp() throws InterruptedException {
         if (player.points >= player.levelCost) {
             player.maxHealth += 10;
             player.currentHealth = player.maxHealth;
             player.attack += 2;
             player.magicAttack += 3;
             player.level++;
-            System.out.println("You are now Level " + player.level);
+            gui.textArea.setText("You are now Level " + player.level);
             player.points = player.points - player.levelCost;
             player.levelCost += 10;
             if (player.level % 5 == 0) {
                 player.flasksCap++;
-                System.out.println("Potion Capacity Increased!");
+                gui.textArea.setText("Potion Capacity Increased!");
             }
             if (player.level % 10 == 0) {
                 player.mcTotal++;
-                System.out.println("Magic Casts Increased!");
+                gui.textArea.setText("Magic Casts Increased!");
                 player.magicCharges = player.mcTotal;
             }
+            gui.campFireScreen();
         } else {
-            System.out.println("You do not have points to level up");
+            gui.textArea.setLineWrap(true);
+            gui.textArea.setText("You do not have enough points to level up!\n");
+            gui.campFireScreen();
+            
         }
+    }
+    
+        public void statsOutput(){
+        String output = "Name: "+ player.name;
+        output += "     Level: " + player.level;
+        output += "\nAttack: " + player.attack;
+        output += "     Healing Flasks: "+player.flasksCap;
+        output += "\nMagic Attack: " + player.magicAttack;
+        output += "     Magic Casts: " +player.mcTotal;
+        
+        gui.textArea.setText(output);
+        
+       
     }
 }

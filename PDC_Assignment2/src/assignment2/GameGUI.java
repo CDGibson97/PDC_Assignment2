@@ -9,8 +9,6 @@ import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.Timer;
-
 /**
  *
  * @author Callum Gibson;
@@ -19,13 +17,18 @@ public final class GameGUI implements ActionListener {
 
     JFrame gameWindow;
     PrintStream ps;
-    private JTextArea textArea;
+    public JTextArea textArea;
     private JPanel titleScreen;
-    public JPanel b1Panel = new JPanel();
+
     private Font font;
-    private Font regularFont = new Font("Times New Roman", Font.PLAIN, 20);
-    private JButton b1 = new JButton();
-    private JButton b2;
+    private final Font regularFont = new Font("Times New Roman", Font.PLAIN, 20);
+
+    private final JButton b1 = new JButton();
+    private final JButton b2 = new JButton();
+    private final JButton b3 = new JButton();
+    private final JButton b4 = new JButton();
+    public JPanel b1Panel = new JPanel();
+    public JPanel b2Panel = new JPanel();
     public Player player;
     public campFire campfire;
     public Battle battle;
@@ -33,12 +36,11 @@ public final class GameGUI implements ActionListener {
     public GameGUI() {
         this.gameWindow();
         this.buttons();
-
     }
 
     public void gameWindow() {
         gameWindow = new JFrame();
-        gameWindow.setSize(800, 600);
+        gameWindow.setSize(1200, 800);
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameWindow.setLayout(null);
         gameWindow.setVisible(true);
@@ -46,27 +48,40 @@ public final class GameGUI implements ActionListener {
     }
 
     public void buttons() {
-        b1 = new JButton();
         b1.setBackground(Color.GRAY);
         b1.setForeground(Color.WHITE);
+        b1.setPreferredSize(new Dimension(300, 85));
         b1.setText("Start Game");
         b1.setActionCommand("start");
         b1.setFont(regularFont);
 
-        b2 = new JButton();
         b2.setBackground(Color.GRAY);
         b2.setForeground(Color.WHITE);
+        b2.setPreferredSize(new Dimension(300, 85));
         b2.setActionCommand("exit");
         b2.setText("Exit Game");
         b2.setFont(regularFont);
 
-        b1Panel.setBounds(300, 350, 100, 80);
-        b1Panel.setBackground(Color.GRAY);
+        b3.setBackground(Color.gray);
+        b3.setForeground(Color.WHITE);
+        b3.setPreferredSize(new Dimension(300, 85));
+        b3.setFont(regularFont);
 
+        b4.setBackground(Color.gray);
+        b4.setForeground(Color.WHITE);
+        b4.setPreferredSize(new Dimension(300, 85));
+        b4.setFont(regularFont);
+
+        b1Panel.setBounds(300, 350, 200, 200);
+        b1Panel.setBackground(Color.GRAY);
         b1Panel.add(b1);
         b1Panel.add(b2);
+
         b1.addActionListener(this);
         b2.addActionListener(this);
+        b3.addActionListener(this);
+        b4.addActionListener(this);
+
     }
 
     public void titleScreen() throws InterruptedException {
@@ -74,7 +89,9 @@ public final class GameGUI implements ActionListener {
         titleScreen.setBounds(100, 100, 600, 150);
         titleScreen.setBackground(Color.black);
 
-        textArea = new JTextArea(50, 10);
+        textArea = new JTextArea(50, 20);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
         ps = new PrintStream(new OutputTextConversion(textArea));
         System.setOut(ps);
         System.setErr(ps);
@@ -85,16 +102,18 @@ public final class GameGUI implements ActionListener {
         titleScreen.add(textArea);
         gameWindow.add(titleScreen);
         gameWindow.add(b1Panel, BorderLayout.SOUTH);
+        gameWindow.add(b2Panel, BorderLayout.SOUTH);
         gameWindow.setBackground(Color.black);
 
         //Add image
         textArea.setText("");
         font = new Font("Arial", Font.BOLD, 30);
         textArea.setFont(font);
-        System.out.println("=====PDC Assignment Two====");
+        textArea.setText("=====PDC Assignment Two====");
 
     }
-
+    
+    //Home screen where player will save and load from automatically based on name scanner
     public void characterCreationScreen() {
         JFrame popout = new JFrame();
         boolean validate = false;
@@ -112,28 +131,52 @@ public final class GameGUI implements ActionListener {
             }
         } while (!validate);
         if (result != null) {
-            System.out.println("Welcome " + result);
+            textArea.setText("Welcome " + result);
             this.player = new Player(result);
             b1.setText("Continue");
             b1.setActionCommand("continue");
 
-            campfire = new campFire(player);
+            campfire = new campFire(player, this);
         }
     }
-
+    
+    //CampFire Screen construction
     public void campFireScreen() throws InterruptedException {
-        System.out.println("You find a place to rest");
-        textArea.setText("");
-        System.out.println();
-        System.out.println("What do you choose to do?");
+        
+        player.magicCharges = player.mcTotal;
+        player.flasks = player.flasksCap;
+        
+        textArea.setText("\nWhat do you choose to do?");
 
+        b1Panel.setBounds(150, 350, 200, 200);
+
+        b2Panel.setBounds(450, 350, 200, 200);
+        b2Panel.setBackground(Color.gray);
+        b2Panel.add(b3);
+        b2Panel.add(b4);
+        gameWindow.add(b2Panel);
+
+        b1.setText("Continue to battle");
+        b1.setActionCommand("battle");
+
+        b2.setText("Level up");
+        b2.setActionCommand("level");
+
+        b3.setText("Start Final Boss");
+        //Need to implement
+
+        b4.setText("Stats Screen");
+        b4.setActionCommand("stats");
+    }
+    
+    public void battleScreen() throws InterruptedException {
+        
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
 
         String choice = event.getActionCommand();
-
         switch (choice) {
             case "start":
                 characterCreationScreen();
@@ -142,11 +185,34 @@ public final class GameGUI implements ActionListener {
                 System.exit(0);
             case "continue": {
                 try {
+                    textArea.setText("You find a place to rest");
                     campFireScreen();
+                    break;
+
                 } catch (InterruptedException ex) {
                     Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            case "battle":
+            {
+                battle = new Battle(player);
+                try {
+                    battle.Screen();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case "level": {
+                try {
+                    campfire.levelUp();
+                    break;
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case "stats":
+                campfire.statsOutput();
+                break;
 
         }
     }
