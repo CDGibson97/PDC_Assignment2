@@ -40,7 +40,7 @@ public final class GameGUI implements ActionListener {
 
     public void gameWindow() {
         gameWindow = new JFrame();
-        gameWindow.setSize(1200, 800);
+        gameWindow.setSize(800, 600);
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameWindow.setLayout(null);
         gameWindow.setVisible(true);
@@ -77,6 +77,13 @@ public final class GameGUI implements ActionListener {
         b1Panel.add(b1);
         b1Panel.add(b2);
 
+        b2Panel.setBounds(450, 350, 200, 200);
+        b2Panel.setBackground(Color.gray);
+        b2Panel.add(b3);
+        b2Panel.add(b4);
+        gameWindow.add(b2Panel);
+        b2Panel.setVisible(false);
+
         b1.addActionListener(this);
         b2.addActionListener(this);
         b3.addActionListener(this);
@@ -112,7 +119,7 @@ public final class GameGUI implements ActionListener {
         textArea.setText("=====PDC Assignment Two====");
 
     }
-    
+
     //Home screen where player will save and load from automatically based on name scanner
     public void characterCreationScreen() {
         JFrame popout = new JFrame();
@@ -139,22 +146,18 @@ public final class GameGUI implements ActionListener {
             campfire = new campFire(player, this);
         }
     }
-    
+
     //CampFire Screen construction
     public void campFireScreen() throws InterruptedException {
         
         player.magicCharges = player.mcTotal;
         player.flasks = player.flasksCap;
+
+        textArea.append("\nWhat do you choose to do?");
         
-        textArea.setText("\nWhat do you choose to do?");
-
+        
         b1Panel.setBounds(150, 350, 200, 200);
-
-        b2Panel.setBounds(450, 350, 200, 200);
-        b2Panel.setBackground(Color.gray);
-        b2Panel.add(b3);
-        b2Panel.add(b4);
-        gameWindow.add(b2Panel);
+        b2Panel.setVisible(true);
 
         b1.setText("Continue to battle");
         b1.setActionCommand("battle");
@@ -168,9 +171,21 @@ public final class GameGUI implements ActionListener {
         b4.setText("Stats Screen");
         b4.setActionCommand("stats");
     }
-    
+
     public void battleScreen() throws InterruptedException {
-        
+        textArea.append("\nSelect Action...");
+
+        b1.setText("Attack");
+        b1.setActionCommand("attack");
+
+        b2.setText("Heal");
+        b2.setActionCommand("heal");
+
+        b3.setText("Magic Attack");
+        b3.setActionCommand("magic");
+
+        b4.setText("Flee");
+        b4.setActionCommand("flee");
     }
 
     @Override
@@ -181,39 +196,82 @@ public final class GameGUI implements ActionListener {
             case "start":
                 characterCreationScreen();
                 break;
+
             case "exit":
                 System.exit(0);
-            case "continue": {
-                try {
-                    textArea.setText("You find a place to rest");
-                    campFireScreen();
-                    break;
 
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            case "continue": 
+                try {
+                textArea.setText("You find a place to rest");
+                campFireScreen();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+            break;
+
             case "battle":
-            {
-                battle = new Battle(player);
+                battle = new Battle(this);
+                textArea.setText("");
+                textArea.setText("You stumble across a level " + battle.enemy.level + " " + battle.enemy.name);
                 try {
-                    battle.Screen();
+                    battleScreen();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    textArea.setText("");
+                    textArea.setText("Can not reach screen");
+                } catch (NullPointerException ex) {
+                    textArea.setText("");
+                    textArea.setText("Cannot reach battle Screen");
                 }
-            }
-            case "level": {
+                break;
+
+            case "level": 
                 try {
-                    campfire.levelUp();
-                    break;
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                campfire.levelUp();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+            break;
+
             case "stats":
                 campfire.statsOutput();
                 break;
 
+            case "attack":
+                try {
+                battle.playerAttack();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            break;
+
+            case "heal":
+            
+                try {
+                player.heal(this);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NullPointerException ex) {
+                textArea.setText("");
+                textArea.setText("Failed to heal");
+            }
+
+            break;
+
+            case "magic":
+                try {
+                battle.magicAttack();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            break;
+
+            case "flee": {
+                try {
+                    battle.flee();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 

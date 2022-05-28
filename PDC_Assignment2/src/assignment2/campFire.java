@@ -20,7 +20,7 @@ public class campFire {
     }
     //Creates final boss instance
     public void battleBoss() {
-        Battle battle = new Battle(player, true);
+        Battle battle = new Battle(true);
     }
 
     //Returns true, and will continue into battle screen

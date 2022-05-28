@@ -94,26 +94,28 @@ public class Player {
     }
 
 //Returns a true or false to dictate whether player can run away from monster or not
-    public boolean flee() {
-        Random rand = new Random();
-        return rand.nextBoolean();
-    }
-
-//Player healing function in battles, based on 50% heals, or back to full if above. Players can heal on full health, as seen in many other games
-    public void heal() {
+    public boolean heal(GameGUI gui) throws InterruptedException {
         if (this.flasks > 0) {
             int healthRestore = this.maxHealth / 2;
             if ((this.currentHealth + healthRestore) < this.maxHealth) {
                 this.currentHealth += healthRestore;
-                System.out.println("Health restored to " + this.currentHealth);
-                this.flasks--;
+                gui.textArea.setText("Health restored to " + this.currentHealth);
+                gui.player.flasks--;
+                return true;
             } else {
-                this.currentHealth = this.maxHealth;
-                System.out.println("Player healed to full health!");
-                this.flasks--;
+                gui.player.currentHealth = gui.player.maxHealth;
+                gui.textArea.setText("Player healed to full health!");
+                gui.player.flasks--;
+                return true;
             }
         } else {
-            System.out.println("You have no Potions!");
+            gui.textArea.setText("You have no Potions!");
+            
         }
+        gui.battleScreen();
+        return false;
     }
+
+//Player healing function in battles, based on 50% heals, or back to full if above. Players can heal on full health, as seen in many other games
+
 }
