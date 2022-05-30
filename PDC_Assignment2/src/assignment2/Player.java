@@ -10,7 +10,7 @@ import java.util.Random;
 public class Player {
 
     String name;
-    int maxHealth; //Max health
+    int maxHealth; //Max playerHealth
     int currentHealth;
 
     int attack; //Maximum attack possibility
@@ -101,11 +101,13 @@ public class Player {
                 this.currentHealth += healthRestore;
                 gui.textArea.setText("Health restored to " + this.currentHealth);
                 gui.player.flasks--;
+                gui.playerHealth.setValue(this.currentHealth);
                 return true;
             } else {
                 gui.player.currentHealth = gui.player.maxHealth;
                 gui.textArea.setText("Player healed to full health!");
                 gui.player.flasks--;
+                gui.playerHealth.setValue(this.currentHealth);
                 return true;
             }
         } else {
@@ -116,6 +118,6 @@ public class Player {
         return false;
     }
 
-//Player healing function in battles, based on 50% heals, or back to full if above. Players can heal on full health, as seen in many other games
+//Player healing function in battles, based on 50% heals, or back to full if above. Players can heal on full playerHealth, as seen in many other games
 
 }

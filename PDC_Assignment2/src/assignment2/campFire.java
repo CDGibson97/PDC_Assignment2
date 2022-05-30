@@ -1,5 +1,7 @@
 package assignment2;
 
+import java.awt.Color;
+
 /**
  *
  * @author Callum Gibson StudentID 15906010
@@ -8,7 +10,7 @@ public class campFire {
 
     //The purpose of this class is to handle all the rest and upgrade choices of the player character
     //Options include: 
-    //Spend points on level ups and health potion refills
+    //Spend points on level ups and playerHealth potion refills
     Player player;
     saveFile file;
     GameGUI gui;
@@ -18,16 +20,45 @@ public class campFire {
         this.gui = gui;
 
     }
-    //Creates final boss instance
-    public void battleBoss() {
-        Battle battle = new Battle(true);
+    //CampFire Screen construction
+    public void campFireScreen() throws InterruptedException {
+        gui.enemyHealthBar.setVisible(false);
+        gui.textArea.setForeground(Color.white);
+        
+        player.magicCharges = player.mcTotal;
+        player.flasks = player.flasksCap;
+        player.currentHealth = player.maxHealth;
+        
+        gui.playerHealth.setValue(player.currentHealth);
+
+        gui.textArea.append("\nWhat do you choose to do?");
+        
+        
+        gui.b1Panel.setBounds(150, 350, 200, 200);
+        gui.b2Panel.setVisible(true);
+        
+        
+
+        gui.b1.setText("Continue to battle");
+        gui.b1.setActionCommand("battle");
+
+        gui.b2.setText("Level up");
+        gui.b2.setActionCommand("level");
+
+        gui.b3.setText("Start Final Boss");
+        gui.b3.setActionCommand("boss");
+
+        gui.b4.setText("Stats Screen");
+        gui.b4.setActionCommand("stats");
     }
+    
+    
 
     //Returns true, and will continue into battle screen
     public boolean continueJourney() {
         return true;
     }
-//Refills health potions at campfire, if player has enough points 
+//Refills playerHealth potions at campfire, if player has enough points 
     public void refill() {
         if (player.points >= player.potionCost) {
             gui.textArea.setText("Potions have been refilled!");
@@ -47,6 +78,7 @@ public class campFire {
             gui.textArea.setText("You are now Level " + player.level);
             player.points = player.points - player.levelCost;
             player.levelCost += 10;
+            gui.playerHealth.setValue(player.currentHealth);
             if (player.level % 5 == 0) {
                 player.flasksCap++;
                 gui.textArea.setText("Potion Capacity Increased!");
@@ -56,11 +88,11 @@ public class campFire {
                 gui.textArea.setText("Magic Casts Increased!");
                 player.magicCharges = player.mcTotal;
             }
-            gui.campFireScreen();
+            campFireScreen();
         } else {
             gui.textArea.setLineWrap(true);
             gui.textArea.setText("You do not have enough points to level up!\n");
-            gui.campFireScreen();
+            campFireScreen();
             
         }
     }
