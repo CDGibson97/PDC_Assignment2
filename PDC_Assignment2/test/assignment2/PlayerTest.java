@@ -66,9 +66,9 @@ public class PlayerTest {
         Player instance = new Player("Test");
         saveDatabase db = new saveDatabase(gui);
         
-        int expResult = 5;
+        int expResult = 15;
         int result = instance.attack();
-        assertEquals(expResult, result, 10);
+        assertEquals(expResult, result, 15);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }

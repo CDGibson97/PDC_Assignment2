@@ -76,10 +76,11 @@ public class BattleTest {
     @Test
     public void testEnemyAttack() throws Exception {
         System.out.println("enemyAttack");
-        Battle instance = null;
+        GameGUI gui = new GameGUI();
+        Battle instance = new Battle(gui);
         instance.enemyAttack();
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //fail("The test case is a prototype.");
     }
 
     /**
@@ -91,34 +92,6 @@ public class BattleTest {
         GameGUI gui = new GameGUI();
         Battle instance = new Battle(gui);
         instance.magicAttack();
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getEnemy method, of class Battle.
-     */
-    @Test
-    public void testGetEnemy() {
-        System.out.println("getEnemy");
-        GameGUI gui = new GameGUI();
-        Battle instance = new Battle(gui);
-        Enemy expResult = ;
-        Enemy result = instance.getEnemy();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of flee method, of class Battle.
-     */
-    @Test
-    public void testFlee() throws Exception {
-        System.out.println("flee");
-        GameGUI gui = new GameGUI();
-        Battle instance = new Battle(gui);
-        instance.flee();
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }
