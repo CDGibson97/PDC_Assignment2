@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.sql.SQLException;
+
 /**
  *
  * @author Callum Gibson;
@@ -27,9 +29,11 @@ public final class GameGUI implements ActionListener {
     public final JButton b2 = new JButton();
     public final JButton b3 = new JButton();
     public final JButton b4 = new JButton();
+    public final JButton quit = new JButton();
 
     public JPanel b1Panel = new JPanel();
     public JPanel b2Panel = new JPanel();
+    public JPanel quitPanel = new JPanel();
     public JPanel playerHealthBar = new JPanel();
     public JPanel enemyHealthBar = new JPanel();
 
@@ -37,12 +41,20 @@ public final class GameGUI implements ActionListener {
     public JProgressBar enemyHealth;
 
     public Player player;
+    public Enemy enemy;
     public campFire campfire;
     public Battle battle;
+
+    saveDatabase db;
+    loadDatabase ldb;
 
     public GameGUI() {
         this.gameWindow();
         this.buttons();
+        db = new saveDatabase(this);
+        ldb = new loadDatabase(this);
+        ldb.checkTableExists("Player");
+        player = new Player("");
     }
 
     public void gameWindow() {
@@ -52,6 +64,9 @@ public final class GameGUI implements ActionListener {
         gameWindow.setLayout(null);
         gameWindow.setVisible(true);
         gameWindow.getContentPane().setBackground(Color.black);
+        textArea = new JTextArea();
+        playerHealth = new JProgressBar();
+        enemyHealth = new JProgressBar();
     }
 
     public void buttons() {
@@ -79,6 +94,19 @@ public final class GameGUI implements ActionListener {
         b4.setPreferredSize(new Dimension(300, 85));
         b4.setFont(regularFont);
 
+        quit.setBackground(Color.gray);
+        quit.setForeground(Color.white);
+        quit.setPreferredSize(new Dimension(100, 50));
+        quit.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+        quit.setText("Quit");
+        quit.setActionCommand("finish");
+
+        quitPanel.setBounds(350, 10, 100, 50);
+        quitPanel.setBackground(Color.gray);
+        quitPanel.add(quit);
+        gameWindow.add(quitPanel);
+        quitPanel.setVisible(true);
+
         b1Panel.setBounds(300, 350, 200, 200);
         b1Panel.setBackground(Color.GRAY);
         b1Panel.add(b1);
@@ -95,6 +123,7 @@ public final class GameGUI implements ActionListener {
         b2.addActionListener(this);
         b3.addActionListener(this);
         b4.addActionListener(this);
+        quit.addActionListener(this);
 
     }
 
@@ -106,7 +135,7 @@ public final class GameGUI implements ActionListener {
         textArea = new JTextArea(50, 20);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        ps = new PrintStream(new OutputTextConversion(textArea));
+
         System.setOut(ps);
         System.setErr(ps);
 
@@ -119,7 +148,6 @@ public final class GameGUI implements ActionListener {
         gameWindow.add(b2Panel, BorderLayout.SOUTH);
         gameWindow.setBackground(Color.black);
 
-        //Add image
         textArea.setText("");
         font = new Font("Arial", Font.BOLD, 30);
         textArea.setFont(font);
@@ -145,34 +173,20 @@ public final class GameGUI implements ActionListener {
             }
         } while (!validate);
         if (result != null) {
-            textArea.setText("Welcome " + result);
-            this.player = new Player(result);
+            try {
+                ldb.loadPlayer(result);
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
 
-            playerHealthBar.setBounds(100, 15, 200, 30);
-            playerHealthBar.setBackground(Color.black);
-            playerHealthBar.setVisible(true);
-            gameWindow.add(playerHealthBar);
-
-            playerHealth = new JProgressBar(0, player.maxHealth);
-            playerHealth.setPreferredSize(new Dimension(200, 30));
-            playerHealth.setForeground(Color.green);
-            playerHealth.setValue(player.currentHealth);
-            playerHealthBar.add(playerHealth);
-
-            enemyHealthBar.setBounds(500, 15, 200, 30);
-            enemyHealthBar.setBackground(Color.black);
-            gameWindow.add(enemyHealthBar);
-
-            b1.setText("Continue");
-            b1.setActionCommand("continue");
-
-            campfire = new campFire(player, this);
         }
     }
 
     public void battleEndScreen() throws InterruptedException {
+        enemyHealth.setValue(0);
+
         b1.setText("Continue");
-        b1.setActionCommand("continue");
+        b1.setActionCommand("save");
 
         b2.setText(".");
         b2.setActionCommand("nothing");
@@ -188,34 +202,17 @@ public final class GameGUI implements ActionListener {
             textArea.setText("You died.....");
             textArea.setText("Lose all your points and return to Camp Fire");
             player.points = 0;
-        } else if (battle.enemy.name.equals("Dragon")) {
+        } else if (battle.enemy.name.equals("Dragon") && battle.enemy.currentHealth <= 0) {
             textArea.setText("You've beaten the dragon! You win!");
             textArea.append("\n\nGame created by Callum Gibson");
             b1.setText("Finish");
             b1.setActionCommand("finish");
-        } else if (battle.enemy.currentHealth <= 0) {
-            textArea.setText("You defeated the " + battle.enemy.name + " ! You recieve " + battle.enemy.points + " points!");
-            player.points += battle.enemy.points;
+        } else if (enemy.currentHealth <= 0) {
+            textArea.setText("You defeated the " + enemy.name + " ! You recieve " + enemy.points + " points!");
+            player.points += enemy.points;
         } else {
             textArea.setText("You successfully got away!");
         }
-    }
-
-    public void battleScreen() throws InterruptedException {
-        textArea.append("\nSelect Action...");
-        enemyHealth.setValue(battle.enemy.currentHealth);
-
-        b1.setText("Attack");
-        b1.setActionCommand("attack");
-
-        b2.setText("Heal");
-        b2.setActionCommand("heal");
-
-        b3.setText("Magic Attack");
-        b3.setActionCommand("magic");
-
-        b4.setText("Flee");
-        b4.setActionCommand("flee");
     }
 
     @Override
@@ -229,8 +226,14 @@ public final class GameGUI implements ActionListener {
 
             case "exit":
                 System.exit(0);
-
+            case "save":
+                if (enemyHealth != null) {
+                    enemyHealthBar.remove(enemyHealth);
+                }
+                db.savePlayer(player);
+                break;
             case "continue": 
+
                 try {
                 textArea.setText("You find a place to rest");
                 campfire.campFireScreen();
@@ -240,20 +243,22 @@ public final class GameGUI implements ActionListener {
             break;
 
             case "battle":
+
                 battle = new Battle(this);
+                enemy = battle.enemy;
                 textArea.setText("");
                 textArea.setText("You stumble across a level " + battle.enemy.level + " " + battle.enemy.name);
-                
-                enemyHealth = new JProgressBar(0, battle.enemy.maxHealth);
+
+                enemyHealth = new JProgressBar(0, enemy.maxHealth);
                 enemyHealth.setPreferredSize(new Dimension(200, 30));
                 enemyHealth.setForeground(Color.green);
-                
+
                 enemyHealthBar.add(enemyHealth);
                 enemyHealth.setForeground(Color.red);
 
                 enemyHealthBar.setVisible(true);
                 try {
-                    battleScreen();
+                    battle.battleScreen();
                 } catch (InterruptedException ex) {
                     textArea.setText("");
                     textArea.setText("Can not reach screen");
@@ -266,19 +271,19 @@ public final class GameGUI implements ActionListener {
             case "boss":
                 battle = new Battle(this, true);
                 textArea.setText("");
-                textArea.setText("You go to face the dragon! He is level " + battle.enemy.level + "! Be Ready!");
+                textArea.setText("You go to face the dragon! It is level " + battle.enemy.level + "! Be Ready!");
 
                 enemyHealth = new JProgressBar(0, battle.enemy.maxHealth);
                 enemyHealth.setPreferredSize(new Dimension(200, 30));
                 enemyHealth.setForeground(Color.green);
-                
+
                 enemyHealthBar.add(enemyHealth);
                 enemyHealth.setForeground(Color.red);
 
                 enemyHealthBar.setVisible(true);
 
                 try {
-                    battleScreen();
+                    battle.battleScreen();
                 } catch (InterruptedException ex) {
                     textArea.setText("Can not reach screen");
                 } catch (NullPointerException ex) {
@@ -301,61 +306,62 @@ public final class GameGUI implements ActionListener {
             case "attack":
                 try {
                 battle.playerAttack();
+
             } catch (InterruptedException ex) {
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             break;
 
             case "heal":
-            
                 try {
+                b2.setText("Heal (" + player.flasks + " Left)");
                 player.heal(this);
             } catch (InterruptedException ex) {
-                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex.getMessage());
             } catch (NullPointerException ex) {
                 textArea.setText("");
                 textArea.setText("Failed to heal");
             }
-
             break;
 
             case "magic":
                 try {
+                b3.setText("Magic Attack (" + player.magicCharges + " Left)");
                 battle.magicAttack();
             } catch (InterruptedException ex) {
-                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex.getMessage());
             }
             break;
 
             case "flee": 
                 try {
                 battle.flee();
+                
             } catch (InterruptedException ex) {
-                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex.getMessage());
             }
-
+            break;
+            //Proceeds to save screen
+            case "yes":
+                db.savePlayer(player);
+                textArea.setText("Save Successful");
+                break;
+            //Skips saving, and returns to campfire
+            case "no":
+                try {
+                campfire.campFireScreen();
+            } catch (InterruptedException ex) {
+                System.out.println(ex.getMessage());
+            }
+            break;
+            //Sets button to quit game
             case "finish":
                 System.exit(0);
                 break;
-
+            //Sets buttons to no action, allowing for pauses inbetween screens
             case "nothing":
                 break;
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        GameGUI game = new GameGUI();
-        game.titleScreen();
-
-    }
 }
-//Begins gameplay loop, starting at the Campfire rest screen, and running the battle system when leaving the cmapfire
-//        while (run) {
-//            campFire rest = new campFire(player);
-//            rest.campFire();
-//            System.out.println("");
-//            Battle battle = new Battle(player);
-//            battle.Screen();
-//        }
-//    }
-//}

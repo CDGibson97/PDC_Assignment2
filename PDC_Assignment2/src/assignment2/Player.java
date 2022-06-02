@@ -23,6 +23,7 @@ public class Player {
     int flasksCap;//Total heals
 
     int points; //Used to purchase stat upgrades or flask restores at campfires
+    int score;
 
     int level;//Character's level, used to calculate enemy scaling, as well as future costs of levelups.
     int levelCost;//Cost to level up Character at CampFire
@@ -50,7 +51,7 @@ public class Player {
     }
 
 //Used to rebuild Player if detected in files
-    public Player(String name, int level, int points) {
+    public Player(String name, int level, int points, int score) {
         this.name = name;
         this.level = level;
 
@@ -114,7 +115,7 @@ public class Player {
             gui.textArea.setText("You have no Potions!");
             
         }
-        gui.battleScreen();
+        gui.battle.battleScreen();
         return false;
     }
 
