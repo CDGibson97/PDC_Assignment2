@@ -47,8 +47,6 @@ public class GameGUITest {
         GameGUI instance = new GameGUI();
         saveDatabase db = new saveDatabase(instance);
         instance.characterCreationScreen();
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
     }
 
     

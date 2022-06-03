@@ -1,13 +1,11 @@
 package assignment2;
 
-import java.awt.Color;
-import java.awt.Dimension;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
-import java.sql.DatabaseMetaData;
-import javax.swing.JProgressBar;
+
 
 /**
  *
@@ -25,6 +23,11 @@ public class saveDatabase {
         dbManager = new DBManager();
         conn = dbManager.getConnection();
         gui = guiPass;
+    }
+    
+    public saveDatabase(){
+        dbManager = new DBManager();
+        conn = dbManager.getConnection();
     }
     
         public void saveScreen() {
@@ -75,6 +78,22 @@ public class saveDatabase {
             System.out.println(ex.getMessage());
         }
 
+    }
+    
+    public void dropTable(String name){
+        try{
+            statement = conn.createStatement();
+            statement.executeQuery("Drop Table PLAYER");
+            System.out.println("Table dropped");
+            statement.close();
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    public static void main(String[] args) {
+        saveDatabase db = new saveDatabase();
+        db.dropTable("PLAYER");
     }
 
 
