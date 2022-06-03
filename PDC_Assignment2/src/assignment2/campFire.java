@@ -6,7 +6,8 @@ import javax.swing.JProgressBar;
 
 /**
  *
- * @author Callum Gibson StudentID 15906010
+ * @author Callum Gibson 
+ * StudentID 15906010
  */
 public class campFire {
 

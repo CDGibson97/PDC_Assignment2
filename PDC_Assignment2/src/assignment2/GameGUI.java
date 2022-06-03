@@ -14,6 +14,7 @@ import java.sql.SQLException;
 /**
  *
  * @author Callum Gibson;
+ * StudentID: 15906010
  */
 public final class GameGUI implements ActionListener {
 
@@ -56,9 +57,9 @@ public final class GameGUI implements ActionListener {
         ldb.checkTableExists("Player");
         player = new Player("");
     }
-
+    //Initialises the Game Window
     public void gameWindow() {
-        gameWindow = new JFrame();
+        gameWindow = new JFrame("PDC Game by Callum Gibson");
         gameWindow.setSize(800, 600);
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameWindow.setLayout(null);
@@ -67,8 +68,9 @@ public final class GameGUI implements ActionListener {
         textArea = new JTextArea();
         playerHealth = new JProgressBar();
         enemyHealth = new JProgressBar();
+        
     }
-
+    //Initialises the buttons
     public void buttons() {
         b1.setBackground(Color.GRAY);
         b1.setForeground(Color.WHITE);
@@ -126,7 +128,7 @@ public final class GameGUI implements ActionListener {
         quit.addActionListener(this);
 
     }
-
+    //Creates starting screen
     public void titleScreen() throws InterruptedException {
         titleScreen = new JPanel();
         titleScreen.setBounds(100, 100, 600, 150);
@@ -181,7 +183,7 @@ public final class GameGUI implements ActionListener {
 
         }
     }
-
+    //Creates Battle End Screen
     public void battleEndScreen() throws InterruptedException {
         enemyHealth.setValue(0);
 
@@ -220,10 +222,11 @@ public final class GameGUI implements ActionListener {
 
         String choice = event.getActionCommand();
         switch (choice) {
+            //Start Game
             case "start":
                 characterCreationScreen();
                 break;
-
+            //Quit Game
             case "exit":
                 System.exit(0);
             case "save":
@@ -232,6 +235,7 @@ public final class GameGUI implements ActionListener {
                 }
                 db.savePlayer(player);
                 break;
+            // Proceed to CampFire 
             case "continue": 
 
                 try {
@@ -241,7 +245,7 @@ public final class GameGUI implements ActionListener {
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             break;
-
+            //Starts a new Battle
             case "battle":
 
                 battle = new Battle(this);
@@ -267,7 +271,7 @@ public final class GameGUI implements ActionListener {
                     textArea.setText("Cannot reach battle Screen");
                 }
                 break;
-
+            // Starts new final boss 
             case "boss":
                 battle = new Battle(this, true);
                 textArea.setText("");
@@ -291,6 +295,7 @@ public final class GameGUI implements ActionListener {
                 }
 
                 break;
+            //Start levelup at campfire
             case "level": 
                 try {
                 campfire.levelUp();
@@ -298,11 +303,11 @@ public final class GameGUI implements ActionListener {
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             break;
-
+            // Brings up Stats at campfire screen
             case "stats":
                 campfire.statsOutput();
                 break;
-
+            //Attack button
             case "attack":
                 try {
                 battle.playerAttack();
@@ -311,7 +316,7 @@ public final class GameGUI implements ActionListener {
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             break;
-
+            //Heal button
             case "heal":
                 try {
                 b2.setText("Heal (" + player.flasks + " Left)");
@@ -323,7 +328,7 @@ public final class GameGUI implements ActionListener {
                 textArea.setText("Failed to heal");
             }
             break;
-
+            //Magic attack button
             case "magic":
                 try {
                 b3.setText("Magic Attack (" + player.magicCharges + " Left)");
@@ -332,7 +337,7 @@ public final class GameGUI implements ActionListener {
                 System.out.println(ex.getMessage());
             }
             break;
-
+            //Flee button
             case "flee": 
                 try {
                 battle.flee();

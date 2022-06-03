@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 /**
  *
  * @author Callum Gibson
+ * StudentID: 15906010
  */
 public class saveDatabase {
 
@@ -29,31 +30,12 @@ public class saveDatabase {
         dbManager = new DBManager();
         conn = dbManager.getConnection();
     }
-    
-        public void saveScreen() {
-        
-        gui.enemyHealthBar.setVisible(false);
-        gui.textArea.setText("Would you like to save?");
-
-        gui.b1.setText("Yes");
-        gui.b1.setActionCommand("yes");
-
-        gui.b2.setText("No");
-        gui.b2.setActionCommand("no");
-
-        gui.b3.setText("");
-        gui.b3.setActionCommand("nothing");
-
-        gui.b4.setText("");
-        gui.b4.setActionCommand("nothing");
-    }
-
 
 
     public void closeConnection() {
         this.dbManager.closeConnections();
     }
-
+    //This runs automatically saves after returning from battle, and will recognize whether player already exists, overwriting data as an autosave
     public void savePlayer(Player player) {
         try {
             gui.b1.setText("Continue");
@@ -80,22 +62,16 @@ public class saveDatabase {
 
     }
     
+    //This method exists for dropping tables in the database, not accessible by the players.
     public void dropTable(String name){
         try{
             statement = conn.createStatement();
-            statement.executeQuery("Drop Table PLAYER");
+            statement.executeUpdate("Drop Table PLAYER");
             System.out.println("Table dropped");
             statement.close();
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
         }
     }
-    
-    public static void main(String[] args) {
-        saveDatabase db = new saveDatabase();
-        db.dropTable("PLAYER");
-    }
-
-
 
 }

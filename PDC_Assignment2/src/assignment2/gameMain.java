@@ -7,6 +7,7 @@ package assignment2;
 /**
  *
  * @author Callum Gibson;
+ * StudentID: 15906010
  */
 public class gameMain {
     public static void main(String[] args) {

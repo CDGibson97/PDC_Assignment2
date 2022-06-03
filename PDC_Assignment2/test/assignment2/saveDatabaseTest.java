@@ -36,18 +36,6 @@ public class saveDatabaseTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of saveScreen method, of class saveDatabase.
-     */
-    @Test
-    public void testSaveScreen() {
-        System.out.println("saveScreen");
-        GameGUI gui = new GameGUI();
-        saveDatabase instance = new saveDatabase(gui);
-        instance.saveScreen();
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
-    }
 
     /**
      * Test of closeConnection method, of class saveDatabase.

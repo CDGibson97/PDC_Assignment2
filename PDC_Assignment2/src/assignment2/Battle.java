@@ -4,9 +4,7 @@ package assignment2;
  *
  * @author Callum Gibson StudentID 15906010
  */
-
 import java.util.Random;
-
 
 //This class runs the entire battle system, using a variety of methods from both in this class and other classes to make up the actions from the player and enemy
 public final class Battle extends Thread {
@@ -14,7 +12,6 @@ public final class Battle extends Thread {
     Player player;
     Enemy enemy;
     GameGUI gui;
-    
 
 //Regular Constructor for battles throughout the game  
     public Battle(GameGUI gg) {
@@ -23,8 +20,8 @@ public final class Battle extends Thread {
         player = gg.player;
         enemy.stats(gg.player);
     }
-    
-        public void battleScreen() throws InterruptedException {
+//Constructs the battle screen for the gui
+    public void battleScreen() throws InterruptedException {
         gui.textArea.append("\nSelect Action...");
         gui.enemyHealth.setValue(enemy.currentHealth);
 
@@ -52,7 +49,7 @@ public final class Battle extends Thread {
     }
 
     public void playerAttack() throws InterruptedException, NullPointerException {
-        
+
         gui.textArea.setText("");
         int playerAttack = player.attack();
 
@@ -73,10 +70,10 @@ public final class Battle extends Thread {
             gui.textArea.setText("You missed!");
         }
         if (enemy.currentHealth <= 0) {
-            
+
             gui.battleEndScreen();
-        } else{
-        enemyAttack();
+        } else {
+            enemyAttack();
         }
     }
 
@@ -111,20 +108,19 @@ public final class Battle extends Thread {
                 player.magicCharges--;
                 gui.enemyHealth.setValue(enemy.currentHealth);
                 if (enemy.currentHealth <= 0) {
-                    
+
                     gui.battleEndScreen();
-                }
-                else{
+                } else {
                     enemyAttack();
                 }
             }
-        } else if (player.magicCharges <= 0){
+        } else if (player.magicCharges <= 0) {
             gui.textArea.setText("You have no magic!");
             gui.textArea.append("\nPlease try a different action");
-        } else{
+        } else {
             enemyAttack();
         }
-        
+
     }
 
     //This method gets and returns an enemy, with a higher chance of it returning a flying eye or zombie
@@ -151,7 +147,7 @@ public final class Battle extends Thread {
             battleScreen();
         }
     }
-    
+
     //This method calculates the chance that magic hits, as well as doubling for crit chance
     private int chanceHit() {
         Random rand = new Random();

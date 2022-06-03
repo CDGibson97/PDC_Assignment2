@@ -16,6 +16,7 @@ import javax.swing.JProgressBar;
 /**
  *
  * @author Callum Gibson;
+ * StudentID: 15906010
  */
 public class loadDatabase {
 
@@ -30,7 +31,7 @@ public class loadDatabase {
         conn = dbManager.getConnection();
         gui = guiPass;
     }
-
+    //Automatic load system that occurs when entering an existing name in the character creation screen, pulling through all the stats of that player
     public void loadPlayer(String playerName) throws SQLException {
 
         statement = conn.createStatement();
